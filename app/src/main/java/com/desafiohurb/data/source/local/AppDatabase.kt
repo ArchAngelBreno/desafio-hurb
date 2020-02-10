@@ -4,7 +4,7 @@
 //import androidx.room.Database
 //import androidx.room.Room
 //import androidx.room.RoomDatabase
-//import com.desafiohurb.data.entity.hotel.Result
+//import com.desafiohurb.data.hotel.entity.Result
 //
 //@Database(entities = [Result::class], version = 1)
 //abstract class AppDatabase: RoomDatabase() {

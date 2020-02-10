@@ -12,6 +12,7 @@ val repositoryModule = module {
     single<HomeRepository> {
         HomeRepository(
             get()
+//            get()
         )
     }
 }

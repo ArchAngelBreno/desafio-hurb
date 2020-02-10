@@ -1,6 +1,6 @@
 package com.desafiohurb.data.source.remote
 
-import com.desafiohurb.data.entity.hotel.HotelResponse
+import com.desafiohurb.data.hotel.entity.HotelResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 

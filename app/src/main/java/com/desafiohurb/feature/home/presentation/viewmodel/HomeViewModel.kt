@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.desafiohurb.core.base.BaseViewModel
 import com.desafiohurb.core.helper.Resource
-import com.desafiohurb.data.entity.hotel.Result
+import com.desafiohurb.data.hotel.domain.ResultDomain
 import com.desafiohurb.feature.home.repository.HomeRepository
 import kotlinx.coroutines.launch
 
@@ -14,8 +14,8 @@ class HomeViewModel(
 ) : BaseViewModel(), IHomeViewModel {
 
 
-    private val hotelsMutableLiveData = MutableLiveData<Resource<List<Result>>>()
-    val hotelsLiveData: LiveData<Resource<List<Result>>> by lazy {
+    private val hotelsMutableLiveData = MutableLiveData<Resource<List<ResultDomain>>>()
+    val hotelsLiveData: LiveData<Resource<List<ResultDomain>>> by lazy {
         hotelsMutableLiveData
     }
 
@@ -26,7 +26,6 @@ class HomeViewModel(
 
     override fun fetchHotels(page: Int) {
         hotelsMutableLiveData.loading()
-
         viewModelScope.launch {
             try {
                 homeRepository.retrieveHotels(page)?.let {
