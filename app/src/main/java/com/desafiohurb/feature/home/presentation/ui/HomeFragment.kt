@@ -22,13 +22,14 @@ class HomeFragment : Fragment(), IViewContract {
     private val homeViewModel by viewModel<HomeViewModel>()
 
     private val homeAdapter: HomeAdapter by lazy {
-            HomeAdapter(
-                onItemClickListener = {
-                    Timber.tag("Implementar")
-                },
-                onRetryClickListener = {
-                    errorBottomScroll(false)
-                })
+        HomeAdapter(
+            onItemClickListener = {
+                Timber.tag("Implementar")
+            },
+            onRetryClickListener = {
+                homeViewModel.fetchHotels(homeViewModel.currentPage)
+                errorBottomScroll(false)
+            })
     }
 
     override fun onCreateView(
@@ -58,17 +59,25 @@ class HomeFragment : Fragment(), IViewContract {
             onError = {
                 showError(it)
             })
-    }
 
-    override fun showSuccess(results: List<ResultDomain>) {
-        homeProgressBar.visibility = View.GONE
         with(hotelsRecyclerView) {
-            this.visibility = View.VISIBLE
             adapter = homeAdapter
-            val layoutManager = GridLayoutManager(this@HomeFragment.context, 2 )
+            val layoutManager = GridLayoutManager(this@HomeFragment.context, 2)
+
+            layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return when (homeAdapter.getItemViewType(position)) {
+                        HomeAdapter.ITEM -> 1
+                        HomeAdapter.LOADING_OR_ERROR -> layoutManager.spanCount
+                        else -> layoutManager.spanCount
+                    }
+                }
+            }
+
             this.addOnScrollListener(object : PaginationScroll(layoutManager = layoutManager) {
                 override fun loadMoreItems() {
                     homeViewModel.nextPage()
+                    homeViewModel.isLoading = true
                 }
 
                 override fun isLoading(): Boolean {
@@ -84,13 +93,18 @@ class HomeFragment : Fragment(), IViewContract {
                 }
 
                 override fun hideOthersItems() {
-//                    include_layout_loading_full_screen.visibility = View.GONE
+                    homeProgressBar.visibility = View.GONE
                 }
             })
 
             this.layoutManager = layoutManager
 
         }
+    }
+
+    override fun showSuccess(results: List<ResultDomain>) {
+        homeProgressBar.visibility = View.GONE
+        hotelsRecyclerView.visibility = View.VISIBLE
         homeAdapter.addList(results)
     }
 
@@ -109,7 +123,6 @@ class HomeFragment : Fragment(), IViewContract {
     }
 
     override fun showLoading() {
-        hotelsRecyclerView.visibility = View.GONE
         homeProgressBar.visibility = View.VISIBLE
     }
 

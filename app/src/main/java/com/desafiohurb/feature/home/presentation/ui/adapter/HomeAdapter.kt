@@ -12,37 +12,45 @@ import com.desafiohurb.data.hotel.domain.ResultDomain
 import kotlinx.android.synthetic.main.endless_item_scroll_view.view.*
 import kotlinx.android.synthetic.main.hotel_item.view.*
 
-class HomeAdapter(private val onItemClickListener: ((ResultDomain) -> Unit), private val onRetryClickListener: (() -> Unit)) :
+class HomeAdapter(
+    private val onItemClickListener: ((ResultDomain) -> Unit),
+    private val onRetryClickListener: (() -> Unit)
+) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var isLoadingAdded = false
     private var retryPageLoad = false
-    private var hotels: ArrayList<ResultDomain>? = null
+    private var hotels = ArrayList<ResultDomain>()
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == ITEM) {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.hotel_item, parent, false)
+            val view =
+                LayoutInflater.from(parent.context).inflate(R.layout.hotel_item, parent, false)
             ItemViewHolder(view)
         } else {
-            EndlessItemViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.endless_item_scroll_view, parent, false),onRetryClickListener)
+            EndlessItemViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.endless_item_scroll_view,
+                    parent,
+                    false
+                ), onRetryClickListener
+            )
         }
-
-
     }
 
     override fun getItemCount(): Int {
         return if (isLoadingAdded) {
-            sizeList() + 1
+            hotels.size + 1
         } else {
-            sizeList()
+            hotels.size
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is ItemViewHolder -> {
-                val dataItem = hotels?.get(position)
+                val dataItem = hotels[position]
                 holder.bindView(dataItem)
             }
             is EndlessItemViewHolder -> {
@@ -52,20 +60,19 @@ class HomeAdapter(private val onItemClickListener: ((ResultDomain) -> Unit), pri
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (position < sizeList()) ITEM else LOADING_OR_ERROR
+        return if (position < hotels.size) ITEM else LOADING_OR_ERROR
     }
 
     fun addList(dataItem: List<ResultDomain>) {
-        val initPosition = sizeList()
-        this.hotels = dataItem as ArrayList<ResultDomain>
+        this.hotels.addAll(dataItem)
 
         addItemBottom()
-        notifyItemRangeInserted(initPosition, sizeList())
+        notifyDataSetChanged()
     }
 
     fun clearList() {
         isLoadingAdded = false
-        this.hotels?.clear()
+        this.hotels.clear()
         notifyDataSetChanged()
     }
 
@@ -73,16 +80,14 @@ class HomeAdapter(private val onItemClickListener: ((ResultDomain) -> Unit), pri
         isLoadingAdded = true
     }
 
-    private fun sizeList() = this.hotels?.size ?: 0
-
     fun showErrorRetry(showError: Boolean) {
         retryPageLoad = showError
-        notifyItemChanged(sizeList(), 1)
+        notifyItemChanged(hotels.size, 1)
     }
 
     companion object {
-        private const val ITEM = 100
-        private const val LOADING_OR_ERROR = 101
+        const val ITEM = 100
+        const val LOADING_OR_ERROR = 101
     }
 
     inner class ItemViewHolder(
@@ -102,15 +107,17 @@ class HomeAdapter(private val onItemClickListener: ((ResultDomain) -> Unit), pri
                 .into(hotelImage)
 
             setOnClickListener {
-                hotelItem?.let{
+                hotelItem?.let {
                     onItemClickListener.invoke(it)
                 }
             }
         }
     }
 
-    inner class EndlessItemViewHolder(private val view: View,
-                                      private val onRetryClickListener: (() -> Unit)) : RecyclerView.ViewHolder(view) {
+    inner class EndlessItemViewHolder(
+        private val view: View,
+        private val onRetryClickListener: (() -> Unit)
+    ) : RecyclerView.ViewHolder(view) {
 
         private val itemBottom: ItemReload = view.item_bottom
 
@@ -126,5 +133,4 @@ class HomeAdapter(private val onItemClickListener: ((ResultDomain) -> Unit), pri
             }
         }
     }
-
 }

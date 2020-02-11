@@ -17,9 +17,12 @@ class HomeViewModel(
     var isLoading = true
 
     private val hotelsMutableLiveData = MutableLiveData<Resource<List<ResultDomain>>>()
+
     val hotelsLiveData: LiveData<Resource<List<ResultDomain>>> by lazy {
         hotelsMutableLiveData
     }
+
+    private val hotelsList = mutableListOf<ResultDomain>()
 
     init {
         fetchHotels()
@@ -32,7 +35,8 @@ class HomeViewModel(
             onSuccess = {
                 homeRepository.retrieveHotels(page)?.let {
                     if (!it.isNullOrEmpty()) {
-                        hotelsMutableLiveData.success(it)
+                        hotelsList.addAll(it)
+                        hotelsMutableLiveData.success(hotelsList)
                     }
                 }
             },
@@ -44,7 +48,6 @@ class HomeViewModel(
 
     override fun nextPage() {
         fetchHotels(++currentPage)
-        isLoading = false
     }
 
 
