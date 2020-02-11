@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:checked="true"
+            android:icon="@drawable/ic_home_24px"
+            android:title="Home" />
+        <item
+            android:id="@+id/nav_packages"
+            android:icon="@drawable/ic_travel"
+            android:title="Sugestões" />
+        <item
+            android:id="@+id/nav_hotels"
+            android:icon="@drawable/ic_hotel_24px"
+            android:title="Hotéis" />
+        <item
+            android:id="@+id/nav_more"
+            android:icon="@drawable/ic_more_horiz_24px"
+            android:title="Mais" />
+
+
+    </group>
+</menu>

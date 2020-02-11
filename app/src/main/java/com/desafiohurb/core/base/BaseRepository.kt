@@ -16,7 +16,7 @@ abstract class BaseRepository {
                     result
                 }
             } catch (t: Throwable) {
-                throw Throwable()
+                throw t
             }
         } else {
             loadFromDb.invoke()

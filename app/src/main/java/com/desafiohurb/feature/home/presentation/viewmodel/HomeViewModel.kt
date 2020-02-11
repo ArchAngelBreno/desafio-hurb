@@ -7,12 +7,14 @@ import com.desafiohurb.core.base.BaseViewModel
 import com.desafiohurb.core.helper.Resource
 import com.desafiohurb.data.hotel.domain.ResultDomain
 import com.desafiohurb.feature.home.repository.HomeRepository
-import kotlinx.coroutines.launch
 
 class HomeViewModel(
     private val homeRepository: HomeRepository
 ) : BaseViewModel(), IHomeViewModel {
 
+
+    var currentPage = 1
+    var isLoading = true
 
     private val hotelsMutableLiveData = MutableLiveData<Resource<List<ResultDomain>>>()
     val hotelsLiveData: LiveData<Resource<List<ResultDomain>>> by lazy {
@@ -26,16 +28,28 @@ class HomeViewModel(
 
     override fun fetchHotels(page: Int) {
         hotelsMutableLiveData.loading()
-        viewModelScope.launch {
-            try {
+        viewModelScope.launchWithCallback(
+            onSuccess = {
                 homeRepository.retrieveHotels(page)?.let {
                     if (!it.isNullOrEmpty()) {
                         hotelsMutableLiveData.success(it)
                     }
                 }
-            } catch (t: Throwable) {
+            },
+            onError = { t ->
                 hotelsMutableLiveData.error(t)
             }
-        }
+        )
+    }
+
+    override fun nextPage() {
+        fetchHotels(++currentPage)
+        isLoading = false
+    }
+
+
+    override fun refreshViewModel() {
+        currentPage = 1
+        fetchHotels()
     }
 }

@@ -4,9 +4,9 @@ import com.desafiohurb.data.hotel.domain.ResultDomain
 
 interface IViewContract {
 
-    fun showSucces(results: List<ResultDomain>)
+    fun showSuccess(results: List<ResultDomain>)
 
-    fun showError()
+    fun showError(error: Throwable)
 
     fun showLoading()
 

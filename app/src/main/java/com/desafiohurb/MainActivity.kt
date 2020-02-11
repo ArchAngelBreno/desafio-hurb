@@ -1,56 +1,51 @@
 package com.desafiohurb
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.desafiohurb.core.helper.observeResource
-import com.desafiohurb.data.hotel.domain.ResultDomain
-import com.desafiohurb.feature.home.presentation.ui.IViewContract
-import com.desafiohurb.feature.home.presentation.ui.adapter.HomeAdapter
-import com.desafiohurb.feature.home.presentation.viewmodel.HomeViewModel
+import android.view.MenuItem
+import com.desafiohurb.core.base.BaseActivity
+import com.desafiohurb.core.extension.startFragment
+import com.desafiohurb.feature.home.presentation.ui.HomeFragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.bottomnavigation.LabelVisibilityMode
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
-import org.koin.android.viewmodel.ext.android.viewModel
+import kotlinx.android.synthetic.main.toolbar_app.*
+import kotlin.system.exitProcess
 
-class MainActivity : AppCompatActivity(), IViewContract {
-
-    private val homeViewModel by viewModel<HomeViewModel>()
-    private val hotels = ArrayList<ResultDomain>()
-
-    private val homeAdapter: HomeAdapter by lazy {
-            HomeAdapter(hotels)
-    }
+class MainActivity: BaseActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-
-        homeViewModel.hotelsLiveData.observeResource(this,
-            onSuccess = {
-                showSucces(it)
-            },
-            onLoading = {
-//                showLoading()
-            },
-            onError = {
-                showError()
-            })
+        initUi()
     }
 
-    override fun showSucces(results: List<ResultDomain>) {
-        with(hotelsRecyclerView) {
-            adapter = homeAdapter
-            layoutManager = LinearLayoutManager(this@MainActivity)
+    private fun initUi() {
+        bottomNavigation.labelVisibilityMode = LabelVisibilityMode.LABEL_VISIBILITY_LABELED
+        appToolbar.title = "Desafio Hurb"
+        supportFragmentManager.startFragment<HomeFragment>(R.id.menuFragmentContainer)
 
+    }
+
+    override fun onBackPressed() {
+        finishApp()
+    }
+
+    private fun finishApp() {
+        Snackbar.make(principalContainer, "Sair?", Snackbar.LENGTH_LONG)
+            .setAction("Deseja realmente sair do app?" ) {
+                exitProcess(0)
+            }.show()
+    }
+
+    override fun onNavigationItemSelected(p0: MenuItem): Boolean {
+        bottomNavigation.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> supportFragmentManager.startFragment<HomeFragment>(R.id.menuFragmentContainer)
+            }
+            return@setOnNavigationItemSelectedListener true
         }
-        hotels.addAll(results)
-    }
 
-    override fun showError() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun showLoading() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return true
     }
 }

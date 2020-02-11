@@ -25,7 +25,7 @@ object HotelResponseMapper {
                     it.price?.originalAmountPerDay,
                     it.price?.amountPerDay,
                     transformTaxesEntityToDomain(it.price?.taxes),
-                    it.url,
+                    it.image,
                     it.tags,
                     transformAddressEntityToDomain(it.address)
                 )

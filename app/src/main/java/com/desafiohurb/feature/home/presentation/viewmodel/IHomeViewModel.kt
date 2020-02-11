@@ -4,4 +4,6 @@ interface IHomeViewModel {
 
 
     fun fetchHotels(page: Int = 1)
+    fun nextPage()
+    fun refreshViewModel()
 }
